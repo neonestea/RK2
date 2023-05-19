@@ -6,7 +6,7 @@
 class PingPong
 {
 public:
-	static constexpr std::size_t MAX = 3;
+	static constexpr std::size_t MAX = 5; //for checking
 
 	void ping()
 	{
@@ -16,7 +16,9 @@ public:
         	std::cout << "Ping" << std::endl;
         	count_++;
         	cv_.notify_all();
-        	cv_.wait(lock);
+        	if (count_.load() < MAX) {
+                cv_.wait(lock);
+            }
     	}
  	}
 
@@ -28,7 +30,10 @@ public:
         	std::cout << "Pong" << std::endl;
         	count_++;
         	cv_.notify_all();
-        	cv_.wait(lock);
+            if (count_.load() < MAX) {
+                cv_.wait(lock);
+            }
+        	
     	}
 	}
 
@@ -46,4 +51,5 @@ int main()
 
 	pingThread.join();
 	pongThread.join();
+    return 0;
 }
